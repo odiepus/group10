@@ -2,12 +2,11 @@
 //
 
 #include "stdafx.h"
-#include "BitmapReader.cpp"
 #include "BitmapReader.h"
 
 
-int _tmain(int argc, _TCHAR* argv[])
-{
-	return;
-}
+//int _tmain(int argc, _TCHAR* argv[])
+//{
+//	return 0;
+//}
 

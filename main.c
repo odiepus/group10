@@ -1,3 +1,9 @@
+#include <windows.h>
+#include <stdio.h>
+#include <io.h>
+#include <math.h>
+#include "BitmapReader.h"
+
 
 // Global Variables for File Data Pointers
 BITMAPFILEHEADER *pSrcFileHdr, *pTgtFileHdr;
@@ -11,8 +17,6 @@ unsigned char toPBC[256];
 
 // default values
 unsigned char gNumLSB = 1, gMask = 0xfe, gShift = 7;
-
-
 
 // function borrowed from Professor John Ortiz BPCS code
 // reads specified bitmap file from disk
@@ -121,6 +125,23 @@ void buildGrayCode()
 } // buildGrayCode
 
 
+// conjugate message data if not above threshold
+void conjugateBlkMap(int index){
+}
+
+// prints help message to the screen
+void printHelp()
+{
+	printf("Usage: Steg_BPSC'source filename' 'target filename' [bits to use] \n\n");
+	printf("Where 'source filename' is the name of the bitmap file to hide.\n");
+	printf("Where 'target filename' is the name of the bitmap file to conceal the source.\n");
+	printf("To extract data from the source, name the target file \"ex\".\n");
+	printf("To bit slice the source, name the target file \"bs\".\n");
+	printf("The number of bits to hide or extract, range is (1 - 7).\n");
+	printf("If not specified, 1 bit is used as the default.\n\n");
+	return;
+} // printHelp
+
 
 // Parameters are used to indicate the input file and available options
 void main(int argc, char *argv[])
@@ -132,4 +153,11 @@ void main(int argc, char *argv[])
 		printHelp();
 		return;
 	}
+
+	// read the target file
+	pTgtFile = readFile(argv[2], &tgtFileSize);
+	if(pTgtFile == NULL) return;
+
+    return 0;
+}
 

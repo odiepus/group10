@@ -250,102 +250,102 @@ printf("color %d == color %d\n", last,cnt);
 
 // Main function in LSB Steg
 // Parameters are used to indicate the input file and available options
-void main(int argc, char *argv[])
-{
-	int x;
-
-	if(argc < 3 || argc > 4)
-	{
-		printHelp();
-		return;
-	}
-
-	// initialize gray code conversion table
-	buildGrayCode();
-
-	// get the number of bits to use for data hiding or data extracting
-	// if not specified, default to one
-	if(argc == 4)
-	{
-		// the range for gNumLSB is 1 - 7;  if gNumLSB == 0, then the mask would be 0xFF and the
-		// shift value would be 8, leaving the target unmodified during embedding or extracting
-		// if gNumLSB == 8, then the source would completely replace the target
-		gNumLSB = *(argv[3]) - 48;
-		if(gNumLSB < 1 || gNumLSB > 7)
-		{
-			gNumLSB = 1;
-			printf("The number specified for LSB was invalid, using the default value of '1'.\n\n");
-		}
-		gMask = 256 - (int) pow(2, gNumLSB);
-		gShift = 8 - gNumLSB;
-	}
-
-	// read the source file
-	pSrcFile = readFile(argv[1], &srcFileSize);
-	if(pSrcFile == NULL) return;
-
-	// Set up pointers to various parts of the source file
-	pSrcFileHdr = (BITMAPFILEHEADER *) pSrcFile;
-	pSrcInfoHdr = (BITMAPINFOHEADER *) (pSrcFile + sizeof(BITMAPFILEHEADER));
-	// pointer to first RGB color palette, follows file header and bitmap header
-	pSrcColorTable = (RGBQUAD *) (pSrcFile + sizeof(BITMAPFILEHEADER) + pSrcInfoHdr->biSize);
-	// file header indicates where image data begins
-	pSrcData = pSrcFile + pSrcFileHdr->bfOffBits;
-
-	// for debugging purposes, show file info on the screen
-	displayFileInfo(argv[1], pSrcFileHdr, pSrcInfoHdr, pSrcColorTable, pSrcData);
-
-	// scramble the color table
-	if(strcmp(argv[2], "sc") == 0)
-	{
-		char nm[128];
-		unsigned char *pFile;
-		FILE *ptrFile;
-
-		strcpy(nm, "sc_");
-		strcat(nm, argv[1]);
-
-		// scramble the entire color table
-		pFile = scramble(pSrcFile, pSrcColorTable, srcFileSize);
-		if(pFile == NULL) return;
-
-		// open the new file, MUST set binary format (text format will add line feed characters)
-		ptrFile = fopen(nm, "wb+");
-		if(ptrFile == NULL)
-		{
-			printf("Error opening new file for writing.\n\n");
-			return;
-		}
-
-		// write the file
-		x = (int) fwrite(pFile, sizeof(unsigned char), srcFileSize, ptrFile);
-
-		// check for success
-		if(x != srcFileSize)
-		{
-			printf("Error writing file %s.\n\n", nm);
-			return;
-		}
-		fclose(ptrFile); // close file
-
-		return;
-	}
-
-	// read the target file
-	pTgtFile = readFile(argv[2], &tgtFileSize);
-	if(pTgtFile == NULL) return;
-
-	// Set up pointers to various parts of file
-	pTgtFileHdr = (BITMAPFILEHEADER *) pTgtFile;
-	pTgtInfoHdr = (BITMAPINFOHEADER *) (pTgtFile + sizeof(BITMAPFILEHEADER));
-	pTgtColorTable = (RGBQUAD *) (pTgtFile + sizeof(BITMAPFILEHEADER) + pTgtInfoHdr->biSize);
-	pTgtData = pTgtFile + pTgtFileHdr->bfOffBits;
-
-	// for debugging purposes, show file info on the screen
-	displayFileInfo(argv[2], pTgtFileHdr, pTgtInfoHdr, pTgtColorTable, pTgtData);
-
-	// write the file to disk
-	x = writeFile(pTgtFile, pTgtFileHdr->bfSize, argv[2]);
-
-	return;
-} // main
+//void main(int argc, char *argv[])
+//{
+//	int x;
+//
+//	if(argc < 3 || argc > 4)
+//	{
+//		printHelp();
+//		return;
+//	}
+//
+//	// initialize gray code conversion table
+//	buildGrayCode();
+//
+//	// get the number of bits to use for data hiding or data extracting
+//	// if not specified, default to one
+//	if(argc == 4)
+//	{
+//		// the range for gNumLSB is 1 - 7;  if gNumLSB == 0, then the mask would be 0xFF and the
+//		// shift value would be 8, leaving the target unmodified during embedding or extracting
+//		// if gNumLSB == 8, then the source would completely replace the target
+//		gNumLSB = *(argv[3]) - 48;
+//		if(gNumLSB < 1 || gNumLSB > 7)
+//		{
+//			gNumLSB = 1;
+//			printf("The number specified for LSB was invalid, using the default value of '1'.\n\n");
+//		}
+//		gMask = 256 - (int) pow(2, gNumLSB);
+//		gShift = 8 - gNumLSB;
+//	}
+//
+//	// read the source file
+//	pSrcFile = readFile(argv[1], &srcFileSize);
+//	if(pSrcFile == NULL) return;
+//
+//	// Set up pointers to various parts of the source file
+//	pSrcFileHdr = (BITMAPFILEHEADER *) pSrcFile;
+//	pSrcInfoHdr = (BITMAPINFOHEADER *) (pSrcFile + sizeof(BITMAPFILEHEADER));
+//	// pointer to first RGB color palette, follows file header and bitmap header
+//	pSrcColorTable = (RGBQUAD *) (pSrcFile + sizeof(BITMAPFILEHEADER) + pSrcInfoHdr->biSize);
+//	// file header indicates where image data begins
+//	pSrcData = pSrcFile + pSrcFileHdr->bfOffBits;
+//
+//	// for debugging purposes, show file info on the screen
+//	displayFileInfo(argv[1], pSrcFileHdr, pSrcInfoHdr, pSrcColorTable, pSrcData);
+//
+//	// scramble the color table
+//	if(strcmp(argv[2], "sc") == 0)
+//	{
+//		char nm[128];
+//		unsigned char *pFile;
+//		FILE *ptrFile;
+//
+//		strcpy(nm, "sc_");
+//		strcat(nm, argv[1]);
+//
+//		// scramble the entire color table
+//		pFile = scramble(pSrcFile, pSrcColorTable, srcFileSize);
+//		if(pFile == NULL) return;
+//
+//		// open the new file, MUST set binary format (text format will add line feed characters)
+//		ptrFile = fopen(nm, "wb+");
+//		if(ptrFile == NULL)
+//		{
+//			printf("Error opening new file for writing.\n\n");
+//			return;
+//		}
+//
+//		// write the file
+//		x = (int) fwrite(pFile, sizeof(unsigned char), srcFileSize, ptrFile);
+//
+//		// check for success
+//		if(x != srcFileSize)
+//		{
+//			printf("Error writing file %s.\n\n", nm);
+//			return;
+//		}
+//		fclose(ptrFile); // close file
+//
+//		return;
+//	}
+//
+//	// read the target file
+//	pTgtFile = readFile(argv[2], &tgtFileSize);
+//	if(pTgtFile == NULL) return;
+//
+//	// Set up pointers to various parts of file
+//	pTgtFileHdr = (BITMAPFILEHEADER *) pTgtFile;
+//	pTgtInfoHdr = (BITMAPINFOHEADER *) (pTgtFile + sizeof(BITMAPFILEHEADER));
+//	pTgtColorTable = (RGBQUAD *) (pTgtFile + sizeof(BITMAPFILEHEADER) + pTgtInfoHdr->biSize);
+//	pTgtData = pTgtFile + pTgtFileHdr->bfOffBits;
+//
+//	// for debugging purposes, show file info on the screen
+//	displayFileInfo(argv[2], pTgtFileHdr, pTgtInfoHdr, pTgtColorTable, pTgtData);
+//
+//	// write the file to disk
+//	x = writeFile(pTgtFile, pTgtFileHdr->bfSize, argv[2]);
+//
+//	return;
+//} // main
