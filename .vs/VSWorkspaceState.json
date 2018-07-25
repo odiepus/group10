@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\StegoProject",
+    "\\StegoProject\\StegoProject"
   ],
-  "SelectedNode": "\\BitmapReader.cpp",
+  "SelectedNode": "\\main.c",
   "PreviewInSolutionExplorer": false
 }
