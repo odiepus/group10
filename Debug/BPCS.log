@@ -1,0 +1,5 @@
+﻿  bpcs.cpp
+c:\users\guak\source\repos\group10\bpcs.cpp(26): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\guak\source\repos\group10\bpcs.cpp(215): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\guak\source\repos\group10\bpcs.cpp(292): warning C4101: 'x': unreferenced local variable
+  BPCS.vcxproj -> C:\Users\guak\source\repos\group10\Debug\BPCS.exe

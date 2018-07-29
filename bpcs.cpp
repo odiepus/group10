@@ -282,7 +282,16 @@ float getBlock(unsigned char *pSrcData) {
 	return convertToCGC(cover_bits);
 }
 
-
+// prints help extract message to the screen
+void printHelpExtract()
+{
+	printf("Steg_BPSC: Extracting Mode:\n");
+	printf("Usage: Steg_BPSC -e 'stego filename' ['threshold']\n\n");
+	printf("\tstego filename:\t\tThe name of the file in which a bitmap may be hidden.\n");
+	printf("\tthreshold:\t\tThe number of bits to hide, range is (1 - 7).\n");
+	printf("\t\tIf not specified 1 bit will be used as the default.\n\n");
+	return;
+} // printHelpExtract
 
 
   // Main function in LSB Steg
@@ -294,17 +303,24 @@ void main(int argc, char *argv[])
 	if (argc < 3 || argc > 4)
 	{
 		printHelp();
+		printHelpExtract();
 		return;
 	}
 
+	//Roberts CODE;
 	// get the number of bits to use for data hiding or data extracting
 	// if not specified, default to one
-	if (argc == 4)
+	if ((strcmp(argv[1], "-h") == 0 && argc == 5) || (strcmp(argv[1], "-e") == 0 && argc == 4))
 	{
 		// the range for gNumLSB is 1 - 7;  if gNumLSB == 0, then the mask would be 0xFF and the
 		// shift value would be 8, leaving the target unmodified during embedding or extracting
 		// if gNumLSB == 8, then the source would completely replace the target
-		gNumLSB = *(argv[3]) - 48;
+
+		if (strcmp(argv[1], "-h") == 0)
+			gNumLSB = argv[4];
+		else if (strcmp(argv[1], "-e") == 0)
+			gNumLSB = argv[3];
+
 		if (gNumLSB < 1 || gNumLSB > 7)
 		{
 			gNumLSB = 1;
@@ -313,6 +329,15 @@ void main(int argc, char *argv[])
 		gMask = 256 - (int)pow(2, gNumLSB);
 		gShift = 8 - gNumLSB;
 	}
+	/* Format for hiding		argc
+	0	exe					1
+	1	-h					2
+	2	cover file			3
+	3	message file		4
+	4	threshold			5
+	*/
+
+
 
 	// read the source file
 	pSrcFile = readFile(argv[1], &srcFileSize);
