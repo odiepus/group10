@@ -17,6 +17,7 @@ unsigned char toPBC[256];
 
 // default values
 unsigned char gNumLSB = 1, gMask = 0xfe, gShift = 7;
+float threshold = .3;
 
 // this function builds the canonical gray code array variables
 void buildGrayCode()
@@ -102,14 +103,14 @@ void displayFileInfo(char *pFileName,
 	if (pFileInfo->biBitCount > 16) return;
 
 	//	only needed for debugging
-	printf("Color Table:\n\n");
+	/*printf("Color Table:\n\n");
 
 	for (i = 0; i < numColors; i++)
 	{
 		printf("R:%02x   G:%02x   B:%02x\n", pCT->rgbRed, pCT->rgbGreen, pCT->rgbBlue);
 		pCT++;
 	}
-	//*/
+	*/
 
 	return;
 } // displayFileInfo
@@ -203,8 +204,8 @@ void printHelpHide()
 	printf("Usage: Steg_BPSC -h 'source filename' 'target filename' ['threshold']\n\n");
 	printf("\tsource filename:\tThe name of the bitmap file to hide.\n");
 	printf("\ttarget filename:\tThe name of the bitmap file to conceal within the source.\n");
-	printf("\tthreshold:\t\tThe number of bits to hide, range is (1 - 7).\n");
-	printf("\t\tIf not specified 1 bit will be used as the default.\n\n");
+	printf("\tthreshold:\t\tThe number of bits to hide, range is (.3 - .5).\n");
+	printf("\t\tIf not specified .3 bits will be used as the default.\n\n");
 	return;
 } // printHelpHide
 
@@ -214,8 +215,8 @@ void printHelpExtract()
 	printf("Steg_BPSC: Extracting Mode:\n");
 	printf("Usage: Steg_BPSC -e 'stego filename' ['threshold']\n\n");
 	printf("\tstego filename:\t\tThe name of the file in which a bitmap may be hidden.\n");
-	printf("\tthreshold:\t\tThe number of bits to hide, range is (1 - 7).\n");
-	printf("\t\tIf not specified 1 bit will be used as the default.\n\n");
+	printf("\tthreshold:\t\tThe number of bits to hide, range is (.3 - .5).\n");
+	printf("\t\tIf not specified .3 bits will be used as the default.\n\n");
 	return;
 } // printHelpExtract
 
@@ -243,28 +244,20 @@ int main(int argc, char *argv[])
 		// if gNumLSB == 8, then the source would completely replace the target
 
 		if (strcmp(argv[1], "-h") == 0)
-			gNumLSB = argv[4];
+			threshold = atof(argv[4]);
 		else if (strcmp(argv[1], "-e") == 0)
-			gNumLSB = argv[3];
+			threshold = atof(argv[3]);
 
-		if (gNumLSB < 1 || gNumLSB > 7)
+		if (threshold < .3 || threshold > .5)
 		{
-			gNumLSB = 1;
-			printf("The number specified for LSB was invalid, using the default value of '1'.\n\n");
+			threshold = .3;
+			printf("The number specified for Threshold was invalid, using the default value of '.3'.\n\n");
 		}
-		gMask = 256 - (int)pow(2, gNumLSB);
-		gShift = 8 - gNumLSB;
 	}
-	/* Format for hiding		argc
-		0	exe					1
-		1	-h					2
-		2	cover file			3
-		3	message file		4
-		4	threshold			5
-	*/
+
 	// read the source file
 	pSrcFile = readFile(argv[2], &srcFileSize);
-	if (pSrcFile == NULL) return;
+	if (pSrcFile == NULL) return -1;
 
 	// Set up pointers to various parts of the source file
 	pSrcFileHdr = (BITMAPFILEHEADER *)pSrcFile;
@@ -277,17 +270,12 @@ int main(int argc, char *argv[])
 	// for debugging purposes, show file info on the screen
 	displayFileInfo(argv[2], pSrcFileHdr, pSrcInfoHdr, pSrcColorTable, pSrcData);
 
-	/* Format for Extracting		argc
-	0	exe							1
-	1	-e							2
-	2	message file				3
-	3	threshold					4
-	*/
+
 	// read the target file
 	if (strcmp(argv[1], "-h") == 0)
 	{
 		pTgtFile = readFile(argv[3], &tgtFileSize);
-		if (pTgtFile == NULL) return;
+		if (pTgtFile == NULL) return -1;
 
 		// Set up pointers to various parts of file
 		pTgtFileHdr = (BITMAPFILEHEADER *)pTgtFile;
@@ -301,9 +289,8 @@ int main(int argc, char *argv[])
 
 
 		// write the file to disk
-		x = writeFile(pTgtFile, pTgtFileHdr->bfSize, argv[3]);
+		//x = writeFile(pTgtFile, pTgtFileHdr->bfSize, argv[3]);
 	}
 
-	return;
-} // main
-
+	return -1;
+}
