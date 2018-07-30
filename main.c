@@ -239,10 +239,7 @@ int main(int argc, char *argv[])
 	// if not specified, default to one
 	if ((strcmp(argv[1], "-h") == 0 && argc == 5) || (strcmp(argv[1], "-e") == 0 && argc == 4))
 	{
-		// the range for gNumLSB is 1 - 7;  if gNumLSB == 0, then the mask would be 0xFF and the
-		// shift value would be 8, leaving the target unmodified during embedding or extracting
-		// if gNumLSB == 8, then the source would completely replace the target
-
+		//assigns the threshold for hiding/extracting and assigns a default if not entered or invalid range
 		if (strcmp(argv[1], "-h") == 0)
 			threshold = atof(argv[4]);
 		else if (strcmp(argv[1], "-e") == 0)
