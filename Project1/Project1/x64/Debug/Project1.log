@@ -1,3 +1,1 @@
-﻿  bpcs.cpp
-c:\users\guak\source\repos\project1\project1\bpcs.cpp(214): warning C4326: return type of 'main' should be 'int' instead of 'void'
-  Project1.vcxproj -> C:\Users\guak\source\repos\Project1\x64\Debug\Project1.exe
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.Cpp.Platform.targets(57,5): error MSB8020: The build tools for v141 (Platform Toolset = 'v141') cannot be found. To build using the v141 build tools, please install v141 build tools.  Alternatively, you may upgrade to the current Visual Studio tools by selecting the Project menu or right-click the solution, and then selecting "Retarget solution".
