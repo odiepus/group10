@@ -256,21 +256,24 @@ float convertToCGC(unsigned char array_bits[elementCount][bitBlockSize]) {
 }
 
 //get 8x8 block and convert to bits
-float getBlockBits(unsigned char *pData, int charsToGet, char flag) {
+float getBlockBits(unsigned char *pData, int charsToGet, char *flag) {
 	int i = 0, m = 0;
 	pTempBlock = pData;
 
+	size_t sizeC = sizeof(cover_bits);
 	if (strcmp(flag, "c") == 0) {
-		temp_bits = cover_bits;
+		memcpy(temp_bits, cover_bits, sizeC);
 	}
 	else {
-		temp_bits = message_bits;
+
+		size_t sizeM = sizeof(message_bits);
+		memcpy(temp_bits, message_bits, sizeM);
 	}
 
 	printf("Print PCB of (charsToGet)x8 block\n");
 
 	//change bytes to bits of (charsToGet)x8  I just grab sequentially.
-	for (; i < ; i++) {
+	for (; i < charsToGet; i++) {
 		unsigned char currentChar = *pTempBlock;
 
 		int k = 0;
@@ -296,12 +299,12 @@ float getBlockBits(unsigned char *pData, int charsToGet, char flag) {
 }
 
 
-
-
 void embed(unsigned char * pMsgBlock, unsigned char *pSrcBlock) {
 	int bitPlane = gNumLSB;
-	int numOfBitsToEmbed = bitplane * 8;
-	get
+	int numOfBitsToEmbed = bitPlane * 8;
+	char *coverFlag = "m";
+	getBlockBits(pMsgBlock, bitPlane, coverFlag);
+	printf("%c\n", message_bits[0][0]);
 
 }
 
@@ -383,25 +386,27 @@ void main(int argc, char *argv[])
 	int iterateCover = sizeOfCoverData - (sizeOfCoverData % 8);
 
 
+	embed(pCoverBlock, pMsgData);
+	
 	/*Here is where I start the loop for grabbing bits and checking for complexity and 
 	embed if complex enough.*/
-	int n = 0;
-	for (; n < iterateCover;) {
-		
-		//if block complex enuff then embed from here
-		//because we still on the block we working on
-		if (getBlockBits(pCoverBlock, 8) > alpha) { 
-			printf("Complex enough!!!!\n\n");
-			embed(pCoverBlock, pMsgData);
-		}
-		//if block not complex enuff then move on to next block
-		else {
-			printf("Not complex enough!!!!\n\n");
-		}
-		pCoverBlock = pCoverBlock + 8;
-		n = n + 8;
-		printf("%d, %d\n", n, sizeOfCoverData);
-	}
+	//int n = 0;
+	//for (; n < iterateCover;) {
+	//	
+	//	//if block complex enuff then embed from here
+	//	//because we still on the block we working on
+	//	if (getBlockBits(pCoverBlock, 8) > alpha) { 
+	//		printf("Complex enough!!!!\n\n");
+	//		embed(pCoverBlock, pMsgData);
+	//	}
+	//	//if block not complex enuff then move on to next block
+	//	else {
+	//		printf("Not complex enough!!!!\n\n");
+	//	}
+	//	pCoverBlock = pCoverBlock + 8;
+	//	n = n + 8;
+	//	printf("%d, %d\n", n, sizeOfCoverData);
+	//}
 	
 	 //for debugging purposes, show file info on the screen
 	//displayFileInfo(argv[1], pCoverFileHdr, pSrcInfoHdr, pSrcColorTable, pCoverData);
