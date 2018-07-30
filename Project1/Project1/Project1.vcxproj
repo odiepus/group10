@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{45D9E96D-DC73-41DA-9E28-9ACC5D58DC08}</ProjectGuid>
-    <RootNamespace>Project1</RootNamespace>
+    <RootNamespace>StegoProject</RootNamespace>
     <WindowsTargetPlatformVersion>10</WindowsTargetPlatformVersion>
     <ProjectName>StegoProject</ProjectName>
   </PropertyGroup>
