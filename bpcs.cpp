@@ -26,7 +26,7 @@ unsigned char temp_bits[elementCount][bitBlockSize];
 unsigned char *pTempBlock;
 
 float alpha = 0.3;
-float blockComplex = 0;
+float blockComplex = 0.0;
 
 
 // default values
@@ -225,7 +225,7 @@ float calcComplexity(unsigned char toCGC[bitBlockSize][bitBlockSize]){
 		}
 	}
 	printf("Vertical change count is: %d\n", vertChangeCount);
-	blockComplex = (float)(vertChangeCount + horizChangeCount) / 112.0;
+	blockComplex = (float)(vertChangeCount + horizChangeCount) / 112.00;
 	printf("Block complexity: %lf\n", blockComplex);
 
 	return blockComplex;
@@ -260,15 +260,6 @@ float getBlockBits(unsigned char *pData, int charsToGet, char *flag) {
 	int i = 0, m = 0;
 	pTempBlock = pData;
 
-	size_t sizeC = sizeof(cover_bits);
-	if (strcmp(flag, "c") == 0) {
-		memcpy(temp_bits, cover_bits, sizeC);
-	}
-	else {
-
-		size_t sizeM = sizeof(message_bits);
-		memcpy(temp_bits, message_bits, sizeM);
-	}
 
 	printf("Print PCB of (charsToGet)x8 block\n");
 
@@ -278,7 +269,7 @@ float getBlockBits(unsigned char *pData, int charsToGet, char *flag) {
 
 		int k = 0;
 		for (; k < 8; k++) {
-			unsigned char x = (unsigned char)currentChar;//clean copy of char to work with
+			unsigned char x = currentChar;//clean copy of char to work with
 			unsigned char y = x << k; //remove unwanted higher bits by shifting bit we want to MSB
 			unsigned char z = y >> 7;//then shift the bit we want all the way down to LSB
 			temp_bits[m][k] = z; //then store out wanted bit to our storage array
@@ -290,6 +281,20 @@ float getBlockBits(unsigned char *pData, int charsToGet, char *flag) {
 		pTempBlock++;
 		m++;
 	}
+
+	//get size of bit stream so i can copy it to its respective array
+	//the arrays will be used later, i think
+	size_t sizeOfArray = sizeof(temp_bits);
+
+	if (strcmp(flag, "c") == 0) {
+		memcpy(cover_bits, temp_bits, sizeOfArray);
+	}
+	else {
+
+		size_t sizeM = sizeof(message_bits);
+		memcpy(message_bits, temp_bits, sizeOfArray);
+	}
+
 	if (strcmp(flag, "c") == 0) {
 		return convertToCGC(temp_bits);
 	}
