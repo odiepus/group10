@@ -25,6 +25,7 @@ unsigned char message_bits[elementCount][bitBlockSize];
 unsigned char temp_bits[elementCount][bitBlockSize];
 unsigned char *pTempBlock;
 
+char *blockFlag;
 float alpha = 0.3;
 float blockComplex = 0.0;
 
@@ -225,10 +226,13 @@ float calcComplexity(unsigned char toCGC[bitBlockSize][bitBlockSize]){
 		}
 	}
 	printf("Vertical change count is: %d\n", vertChangeCount);
-	blockComplex = (float)(vertChangeCount + horizChangeCount) / 112.00;
-	printf("Block complexity: %lf\n", blockComplex);
-
-	return blockComplex;
+	
+	if ((vertChangeCount > alpha) & (horizChangeCount > alpha)) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
 }
 
 float convertToCGC(unsigned char array_bits[elementCount][bitBlockSize]) {
@@ -307,8 +311,8 @@ float getBlockBits(unsigned char *pData, int charsToGet, char *flag) {
 void embed(unsigned char * pMsgBlock, unsigned char *pSrcBlock) {
 	int bitPlane = gNumLSB;
 	int numOfBitsToEmbed = bitPlane * 8;
-	char *coverFlag = "m";
-	getBlockBits(pMsgBlock, bitPlane, coverFlag);
+	blockFlag = "m";
+	getBlockBits(pMsgBlock, bitPlane, blockFlag);
 	printf("%c\n", message_bits[0][0]);
 
 }
@@ -398,9 +402,11 @@ void main(int argc, char *argv[])
 	//int n = 0;
 	//for (; n < iterateCover;) {
 	//	
+	//	blockFlag = "c";
+
 	//	//if block complex enuff then embed from here
 	//	//because we still on the block we working on
-	//	if (getBlockBits(pCoverBlock, 8) > alpha) { 
+	//	if (getBlockBits(pCoverBlock, 8, blockFlag) == 1) { 
 	//		printf("Complex enough!!!!\n\n");
 	//		embed(pCoverBlock, pMsgData);
 	//	}
@@ -415,9 +421,6 @@ void main(int argc, char *argv[])
 	
 	 //for debugging purposes, show file info on the screen
 	//displayFileInfo(argv[1], pCoverFileHdr, pSrcInfoHdr, pSrcColorTable, pCoverData);
-
-
-	
 
 	// for debugging purposes, show file info on the screen
 	//displayFileInfo(argv[2], pMsgFileHdr, pMsgInfoHdr, pTgtColorTable, pMsgData);
