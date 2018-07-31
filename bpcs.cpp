@@ -216,7 +216,7 @@ float calcComplexity(unsigned char toCGC[bitBlockSize][bitBlockSize]){
 			if (toCGC[n][p] = !toCGC[n + 1][p]) { horizChangeCount++; }
 		}
 	}
-	printf("Horizontal change count is: %d\n", horizChangeCount);
+	printf("Horizontal change count is: %d\nComplexity: %f\n", horizChangeCount, ((float)horizChangeCount/56.00));
 
 	n = 0;
 	for (; n < 8; n++) {
@@ -227,7 +227,7 @@ float calcComplexity(unsigned char toCGC[bitBlockSize][bitBlockSize]){
 	}
 	printf("Vertical change count is: %d\n", vertChangeCount);
 	
-	if ((vertChangeCount > alpha) & (horizChangeCount > alpha)) {
+	if (( ((float)vertChangeCount / 56.00)> alpha) && ( ((float)horizChangeCount / 56.00)> alpha)) {
 		return 1;
 	}
 	else {
@@ -394,30 +394,32 @@ void main(int argc, char *argv[])
 	int sizeOfCoverData = pCoverFileHdr->bfSize - pCoverFileHdr->bfOffBits;
 	int iterateCover = sizeOfCoverData - (sizeOfCoverData % 8);
 
-
-	embed(pCoverBlock, pMsgData);
+	//testing
+	//embed(pCoverBlock, pMsgData);
 	
 	/*Here is where I start the loop for grabbing bits and checking for complexity and 
 	embed if complex enough.*/
-	//int n = 0;
-	//for (; n < iterateCover;) {
-	//	
-	//	blockFlag = "c";
+	int n = 0;
+	for (; n < 8;) {
+	
+		//set flag to let getBlockBits func know to grab bits from cover 
+		//convert to CGC and calc coplexity
+		blockFlag = "c";
 
-	//	//if block complex enuff then embed from here
-	//	//because we still on the block we working on
-	//	if (getBlockBits(pCoverBlock, 8, blockFlag) == 1) { 
-	//		printf("Complex enough!!!!\n\n");
-	//		embed(pCoverBlock, pMsgData);
-	//	}
-	//	//if block not complex enuff then move on to next block
-	//	else {
-	//		printf("Not complex enough!!!!\n\n");
-	//	}
-	//	pCoverBlock = pCoverBlock + 8;
-	//	n = n + 8;
-	//	printf("%d, %d\n", n, sizeOfCoverData);
-	//}
+		//if block complex enuff then embed from here
+		//because we still on the block we working on
+		if (getBlockBits(pCoverBlock, 8, blockFlag) == 1) { 
+			printf("Complex enough!!!!\n\n");
+			embed(pCoverBlock, pMsgData);
+		}
+		//if block not complex enuff then move on to next block
+		else {
+			printf("Not complex enough!!!!\n\n");
+		}
+		pCoverBlock = pCoverBlock + 8;
+		n = n + 8;
+		printf("%d, %d\n", n, sizeOfCoverData);
+	}
 	
 	 //for debugging purposes, show file info on the screen
 	//displayFileInfo(argv[1], pCoverFileHdr, pSrcInfoHdr, pSrcColorTable, pCoverData);
