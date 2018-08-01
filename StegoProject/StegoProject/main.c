@@ -200,8 +200,8 @@ void conjugateBlkMap(int index) {
 // prints help hide message to the screen
 void printHelpHide()
 {
-	printf("Steg_BPSC: Hiding Mode:\n");
-	printf("Usage: Steg_BPSC -h 'source filename' 'target filename' ['threshold']\n\n");
+	printf("StegoProject: Hiding Mode:\n");
+	printf("Usage: StegoProject.exe -h 'source filename' 'target filename' ['threshold']\n\n");
 	printf("\tsource filename:\tThe name of the bitmap file to hide.\n");
 	printf("\ttarget filename:\tThe name of the bitmap file to conceal within the source.\n");
 	printf("\tthreshold:\t\tThe number of bits to hide, range is (.3 - .5).\n");
@@ -212,8 +212,8 @@ void printHelpHide()
   // prints help extract message to the screen
 void printHelpExtract()
 {
-	printf("Steg_BPSC: Extracting Mode:\n");
-	printf("Usage: Steg_BPSC -e 'stego filename' ['threshold']\n\n");
+	printf("StegoProject: Extracting Mode:\n");
+	printf("Usage: StegoProject.exe -e 'stego filename' ['threshold']\n\n");
 	printf("\tstego filename:\t\tThe name of the file in which a bitmap may be hidden.\n");
 	printf("\tthreshold:\t\tThe number of bits to hide, range is (.3 - .5).\n");
 	printf("\t\tIf not specified .3 bits will be used as the default.\n\n");
