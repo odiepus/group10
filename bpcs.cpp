@@ -13,7 +13,7 @@ BITMAPFILEHEADER *pCoverFileHdr, *pMsgFileHdr;
 BITMAPINFOHEADER *pCoverInfoHdr, *pMsgInfoHdr;
 RGBQUAD *pSrcColorTable, *pTgtColorTable;
 unsigned char *pCoverFile, *pMsgFile, *pCoverData, *pMsgData, *pCoverBlock, *pMsgBlock;
-int coverFileSize, msgFileSize;
+int coverFileSize, msgFileSize, blockNum;
 
 const int bitBlockSize = 8;
 const int elementCount = 64;
@@ -23,6 +23,7 @@ unsigned char toPBC[256];
 unsigned char cover_bits[elementCount][bitBlockSize];
 unsigned char message_bits[elementCount][bitBlockSize];
 unsigned char temp_bits[elementCount][bitBlockSize];
+unsigned char stego_bits[elementCount][bitBlockSize];
 unsigned char *pTempBlock;
 
 char *blockFlag;
@@ -264,7 +265,6 @@ float getBlockBits(unsigned char *pData, int charsToGet, char *flag) {
 	int i = 0, m = 0;
 	pTempBlock = pData;
 
-
 	printf("Print PCB of (charsToGet)x8 block\n");
 
 	//change bytes to bits of (charsToGet)x8  I just grab sequentially.
@@ -309,11 +309,30 @@ float getBlockBits(unsigned char *pData, int charsToGet, char *flag) {
 
 
 void embed(unsigned char * pMsgBlock, unsigned char *pSrcBlock) {
-	int bitPlane = gNumLSB;
+	int bitPlane = gNumLSB, i = 0, j = 0;
 	int numOfBitsToEmbed = bitPlane * 8;
 	blockFlag = "m";
+	
+	/*i pass in the bitplane because this will get for me the nuber of bits I will embed.
+	suppose bitplane is 4. then we would only want to embed 4*8bits = 32 totals bits to embed.
+	thus when i return the message_bits array will have all the bits I need to embed into 
+	the cover bits in a new array stego_bits.*/
 	getBlockBits(pMsgBlock, bitPlane, blockFlag);
-	printf("%c\n", message_bits[0][0]);
+	//printf("%c\n", message_bits[0][0]);
+
+	//starting at the LSB bit plane start embeding and stop at the defined bit plane
+	if (convertToCGC(message_bits)) {
+		for (j = 0; j < bitPlane; j++) {
+			for (i = 0; i < 8; i++) {
+				stego_bits[i][j] = message_bits[i][j];
+			}
+		}
+
+	}
+	else {
+
+	}
+
 
 }
 
@@ -408,7 +427,7 @@ void main(int argc, char *argv[])
 
 		//if block complex enuff then embed from here
 		//because we still on the block we working on
-		if (getBlockBits(pCoverBlock, 8, blockFlag) == 1) { 
+		if (getBlockBits(pCoverBlock, 8, blockFlag)) { 
 			printf("Complex enough!!!!\n\n");
 			embed(pCoverBlock, pMsgData);
 		}
