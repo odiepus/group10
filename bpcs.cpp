@@ -186,7 +186,7 @@ int writeFile(unsigned char *pFile, int fileSize, char *fileName)
   // prints help message to the screen
 void printHelp()
 {
-	printf("Usage: Steg_LSB 'source filename' 'target filename' [bits to use] \n\n");
+	printf("Usage:BPCS.exe -h 'cover file' <bits(int)> 'message file' <threshold(float)> \n\n");
 	printf("Where 'source filename' is the name of the bitmap file to hide.\n");
 	printf("Where 'target filename' is the name of the bitmap file to conceal the source.\n");
 	printf("To extract data from the source, name the target file \"ex\".\n");
@@ -199,8 +199,8 @@ void printHelp()
   // prints help extract message to the screen
 void printHelpExtract()
 {
-	printf("Steg_BPSC: Extracting Mode:\n");
-	printf("Usage: Steg_BPSC -e 'stego filename' ['threshold']\n\n");
+	printf("Steg_BPCS: Extracting Mode:\n");
+	printf("Usage: Steg_BPCS -e 'stego filename' ['threshold']\n\n");
 	printf("\tstego filename:\t\tThe name of the file in which a bitmap may be hidden.\n");
 	printf("\tthreshold:\t\tThe number of bits to hide, range is (1 - 7).\n");
 	printf("\t\tIf not specified 1 bit will be used as the default.\n\n");
@@ -340,7 +340,7 @@ void embed(unsigned char * pMsgBlock, unsigned char *pSrcBlock) {
   // Parameters are used to indicate the input file and available options
 void main(int argc, char *argv[])
 {
-	if (argc < 3 || argc > 4)
+	if (argc < 5 || argc > 6)
 	{
 		printHelp();
 		printHelpExtract();
@@ -357,24 +357,27 @@ void main(int argc, char *argv[])
 		// if gNumLSB == 8, then the source would completely replace the target
 
 		if (strcmp(argv[1], "-h") == 0)
-			gNumLSB = (unsigned char) argv[4];
+			gNumLSB = (unsigned char) argv[4]; // this should not be the threshold
 		else if (strcmp(argv[1], "-e") == 0)
-			gNumLSB = (unsigned char)argv[3];
+			gNumLSB = (unsigned char)argv[3]; // this should not be a filename
 
 		if (gNumLSB < 1 || gNumLSB > 7)
 		{
 			gNumLSB = 1;
 			printf("The number specified for LSB was invalid, using the default value of '1'.\n\n");
+			//this isn't a default if there is no argument specified, causes a segfault
 		}
 		gMask = 256 - (int)pow(2, gNumLSB);
 		gShift = 8 - gNumLSB;
 	}
-	/* Format for hiding		argc
+	/*Format for hiding
+	argv                  argc
 	0	exe					1
 	1	-h					2
 	2	cover file			3
-	3	message file		4
-	4	threshold			5
+	3   bits to hide        4
+	4	message file		5
+	5	threshold			6
 	*/
 
 	// read the message file
@@ -394,21 +397,22 @@ void main(int argc, char *argv[])
 
 
 	// read the source file
-	pCoverFile = readFile(argv[1], &coverFileSize);
+	pCoverFile = readFile(argv[2], &coverFileSize);
 	if (pCoverFile == NULL) return;
 
-	// Set up pointers to various parts of the source file
+	// Set up pointers to various parts of the cover file
 	pCoverFileHdr = (BITMAPFILEHEADER *)pCoverFile;
-	pCoverInfoHdr = (BITMAPINFOHEADER *)(pCoverFile + sizeof(BITMAPFILEHEADER));
+	pCoverInfoHdr = (BITMAPINFOHEADER *)pCoverFileHdr;//(pCoverFile + sizeof(BITMAPFILEHEADER));
 
 	// pointer to first RGB color palette, follows file header and bitmap header
 	pSrcColorTable = (RGBQUAD *)(pCoverFile + sizeof(BITMAPFILEHEADER) + pCoverInfoHdr->biSize);
 
 	// file header indicates where image data begins
-	pCoverData = pCoverFile + pCoverFileHdr->bfOffBits;
+	pCoverData = pCoverFile + pCoverFileHdr->bfOffBits; //should be minus?
 
 	pCoverBlock = pCoverData;
 	printf("Size of file: %ld\n", pCoverFileHdr->bfSize);
+	printf("Cover file data start: %ld\n", pCoverInfoHdr);
 
 	int sizeOfCoverData = pCoverFileHdr->bfSize - pCoverFileHdr->bfOffBits;
 	int iterateCover = sizeOfCoverData - (sizeOfCoverData % 8);
@@ -418,6 +422,7 @@ void main(int argc, char *argv[])
 	
 	/*Here is where I start the loop for grabbing bits and checking for complexity and 
 	embed if complex enough.*/
+	/*
 	int n = 0;
 	for (; n < 8;) {
 	
@@ -435,10 +440,11 @@ void main(int argc, char *argv[])
 		else {
 			printf("Not complex enough!!!!\n\n");
 		}
+		//This only ever runs 1 time
 		pCoverBlock = pCoverBlock + 8;
 		n = n + 8;
 		printf("%d, %d\n", n, sizeOfCoverData);
-	}
+	}//*/
 	
 	 //for debugging purposes, show file info on the screen
 	//displayFileInfo(argv[1], pCoverFileHdr, pSrcInfoHdr, pSrcColorTable, pCoverData);
@@ -448,11 +454,12 @@ void main(int argc, char *argv[])
 
 	// write the file to disk
 	//x = writeFile(pMsgFile, pMsgFileHdr->bfSize, argv[2]);
+	displayFileInfo("something", pCoverFileHdr, pCoverInfoHdr, pSrcColorTable, pCoverData);
 	printf("Pointer value to start of data: %x, At Address: %p\n", *pCoverData, (void *)pCoverData);
 	printf("Pointer value to end of data: %x, At Address: %p\n", *pCoverBlock, (void *)pCoverBlock);
 	printf("Size of Cover data: %ld\n", sizeOfCoverData);
 	printf("Size of Message data: %ld\n", sizeOfMsgData);
-	printf("%d\n", pCoverFileHdr->bfOffBits);
+	printf("Offset to data bits%d\n", pCoverFileHdr->bfOffBits);
 	return;
 } // main
 

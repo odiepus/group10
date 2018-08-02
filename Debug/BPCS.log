@@ -1,5 +1,6 @@
 ﻿  bpcs.cpp
-c:\users\guak\source\repos\group10\bpcs.cpp(26): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\guak\source\repos\group10\bpcs.cpp(215): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\guak\source\repos\group10\bpcs.cpp(292): warning C4101: 'x': unreferenced local variable
-  BPCS.vcxproj -> C:\Users\guak\source\repos\group10\Debug\BPCS.exe
+bpcs.cpp(30): warning C4305: 'initializing': truncation from 'double' to 'float'
+bpcs.cpp(360): warning C4302: 'type cast': truncation from 'char *' to 'unsigned char'
+bpcs.cpp(362): warning C4302: 'type cast': truncation from 'char *' to 'unsigned char'
+bpcs.cpp(415): warning C4477: 'printf' : format string '%ld' requires an argument of type 'long', but variadic argument 1 has type 'BITMAPINFOHEADER *'
+  BPCS.vcxproj -> C:\Users\Travis Woods\source\repos\group10\Debug\BPCS.exe
